@@ -17,6 +17,16 @@ export class App extends Component {
     filter: '',
   }
 
+  componentDidMount () {
+    const localContacts = JSON.parse(localStorage.getItem('contacts'));
+    localContacts && this.setState({contacts: localContacts});
+  }
+  componentDidUpdate (prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts))
+    }
+  }
+
   formSubmitHandler = data => {
     this.setState(prevState => {if (prevState.contacts.some(contact => contact.name === data.name)) {
       Notify.failure(`${data.name}, is already in contact`)
@@ -34,7 +44,7 @@ this.setState({filter: value})
   contactListRender = () => {
     const {contacts, filter} = this.state;
 
-    return contacts.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase()));
+    return contacts ? contacts.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase())) : [];
   }
   deleteContactHandler = (event) => {
     const {contacts} = this.state;
